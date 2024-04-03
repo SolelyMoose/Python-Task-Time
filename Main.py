@@ -58,9 +58,21 @@ def update_gui():
         else:
             closed_processes_list.insert(tk.END, process_name)
 
+def update_interval_changed():
+    global UPDATE_INTERVAL_MS
+    try:
+        new_interval_seconds = int(update_interval_entry.get())
+        if 1 <= new_interval_seconds <= 3600:
+            UPDATE_INTERVAL_MS = new_interval_seconds * 1000
+            print(f"Update interval changed to {new_interval_seconds} seconds")
+        else:
+            print("Update interval must be between 1 and 3600 seconds.")
+    except ValueError:
+        print("Please enter a valid integer for the update interval.")
+
 def main():
     print("Starting main function...")
-    global opened_processes_list, closed_processes_list  # Declare process_list as a global variable
+    global opened_processes_list, closed_processes_list, update_interval_entry  # Declare variables as global
 
     root = tk.Tk()
     root.title("Process Timer")
@@ -80,8 +92,22 @@ def main():
     closed_processes_list = tk.Listbox(closed_processes_frame, width=50, height=20)
     closed_processes_list.pack(padx=10, pady=10)
 
+    # Update interval input field
+    update_interval_frame = tk.Frame(root)
+    update_interval_frame.pack(pady=(10, 0))
+
+    update_interval_label = tk.Label(update_interval_frame, text="Update Interval (seconds):")
+    update_interval_label.pack(side=tk.LEFT, padx=(5, 0), pady=5)
+
+    update_interval_entry = tk.Entry(update_interval_frame, width=10)
+    update_interval_entry.pack(side=tk.LEFT, padx=(0, 5), pady=5)
+
+    update_interval_button = tk.Button(update_interval_frame, text="Set Interval", command=update_interval_changed, width=10)
+    update_interval_button.pack(side=tk.LEFT, pady=5)
+
     # Update the GUI at regular intervals
     def update():
+        print("Running update loop...")
         update_gui()
         root.after(UPDATE_INTERVAL_MS, update)
 
